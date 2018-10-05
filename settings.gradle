@@ -1,0 +1,6 @@
+rootProject.name = 'kiddygambles'
+include 'Domain'
+include 'Data'
+include 'Services'
+include 'Web'
+
