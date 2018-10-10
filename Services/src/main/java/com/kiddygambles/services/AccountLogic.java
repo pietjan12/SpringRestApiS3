@@ -15,5 +15,6 @@ public class AccountLogic implements IAccountLogic {
         this.accountContext = accountContext;
     }
 
+    //inventory ophalen bijvoorbeeld.
 
 }
