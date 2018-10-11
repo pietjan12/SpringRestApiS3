@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+//TODO : KOMT IN DE TOEKOMST VAN MARTIJN ZIJN MODULE, ALS HET GOED IS HOEF IK DAN ALLEEN HET ITEM ID IN MIJN MODULE OP TE SLAAN ZODAT IK DEZE KAN KOPPELEN AAN CONTENTS VAN CASES, DAARNA KAN IK MET DE ID DE JUISTE ITEMS OPVRAGEN IN SERVICE.
 @Entity
 public class Item {
     @Id
@@ -17,11 +18,11 @@ public class Item {
     private Float price;
 
     //Cases waarvan dit item een onderdeel is.
-    @ManyToMany(fetch = FetchType.LAZY ,cascade = CascadeType.PERSIST, mappedBy = "items")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
     private Set<Case> cases = new HashSet<>();
 
     //Accounts waarbij dit item tot de inventory behoord.
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, mappedBy = "items")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
     private Set<Account> accounts = new HashSet<>();
 
     public Item() {}

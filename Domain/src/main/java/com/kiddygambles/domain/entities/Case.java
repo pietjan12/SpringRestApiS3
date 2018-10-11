@@ -14,7 +14,7 @@ public class Case {
     private Float price;
 
     //Items die behoren tot bepaalde cases
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name="caseitems",
             joinColumns = {@JoinColumn(name = "CaseID")},
