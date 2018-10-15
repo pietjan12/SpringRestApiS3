@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -29,7 +31,7 @@ public class Account {
             joinColumns = {@JoinColumn(name = "AccountID")},
             inverseJoinColumns = {@JoinColumn(name = "ItemID")}
     )
-    private Set<Item> items = new HashSet<>();
+    private List<Item> items = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -50,5 +52,17 @@ public class Account {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(int tokens) {
+        this.tokens = tokens;
+    }
+
+    public List<Item> getItems() {
+        return items;
     }
 }

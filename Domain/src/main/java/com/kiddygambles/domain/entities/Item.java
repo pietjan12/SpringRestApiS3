@@ -1,6 +1,7 @@
 package com.kiddygambles.domain.entities;
 
 import com.kiddygambles.domain.enums.Condition;
+import com.kiddygambles.domain.enums.Rarity;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ public class Item {
     private int id;
     private String name;
     private String description;
+    private Rarity rarity;
     private Condition condition;
     private Float price;
 
@@ -54,4 +56,15 @@ public class Item {
         return price;
     }
 
+    public Rarity getRarity() {
+        return rarity;
+    }
+
+    public Set<Case> getCases() {
+        return cases;
+    }
+
+    public Set<Account> getAccounts() {
+        return accounts;
+    }
 }

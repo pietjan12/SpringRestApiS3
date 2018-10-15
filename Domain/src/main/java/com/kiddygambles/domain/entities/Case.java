@@ -1,7 +1,9 @@
 package com.kiddygambles.domain.entities;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -20,7 +22,7 @@ public class Case {
             joinColumns = {@JoinColumn(name = "CaseID")},
             inverseJoinColumns = {@JoinColumn(name = "ItemID")}
     )
-    private Set<Item> items = new HashSet<>();
+    private List<Item> items = new ArrayList<>();
 
     public Case() {
 
@@ -36,7 +38,7 @@ public class Case {
         return id;
     }
 
-    public Set<Item> getItems() {
+    public List<Item> getItems() {
         return items;
     }
 

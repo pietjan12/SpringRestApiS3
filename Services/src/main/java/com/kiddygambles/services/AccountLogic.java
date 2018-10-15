@@ -60,8 +60,6 @@ public class AccountLogic implements IAccountLogic {
         //opslaan in database en result ophalen.
         Account createdUser = this.accountContext.save(account);
 
-        //TODO : bank account etc creeren. OF DOEN WE TOCH EERST BANK ACCOUNT CREEREN EN VANUIT DAAR DOORPASEN VIA API NAAR DE ANDERE MODULES? > dan krijgen we een shared account.
-
         return createdUser;
     }
 

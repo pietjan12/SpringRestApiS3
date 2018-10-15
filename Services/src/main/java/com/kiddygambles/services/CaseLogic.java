@@ -2,10 +2,13 @@ package com.kiddygambles.services;
 
 import com.kiddygambles.data.ICaseRepository;
 import com.kiddygambles.domain.entities.Case;
+import com.kiddygambles.domain.entities.Item;
 import com.kiddygambles.services.Interfaces.ICaseLogic;
+import jdk.internal.joptsimple.internal.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,6 +41,22 @@ public class CaseLogic implements ICaseLogic {
         }
 
         return allCases;
+    }
+
+    @Override
+    public void createCase(Case caseToCreate) throws IllegalArgumentException {
+        if(Strings.isNullOrEmpty(caseToCreate.getName()) || Strings.isNullOrEmpty(caseToCreate.getDescription()) || caseToCreate.getItems().size() <= 0) {
+            throw new IllegalArgumentException("Case parameters name, description and items cannot be null!");
+        }
+
+        caseContext.save(caseToCreate);
+    }
+
+    @Override
+    public List<Item> getWinHistory(int caseID) {
+        //TODO : COULD REQUIREMENT, DOEN ZODRA DE REST WERKT.
+
+        return null;
     }
 
 
