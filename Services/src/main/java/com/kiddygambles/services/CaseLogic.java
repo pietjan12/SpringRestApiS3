@@ -4,7 +4,7 @@ import com.kiddygambles.data.ICaseRepository;
 import com.kiddygambles.domain.entities.Case;
 import com.kiddygambles.domain.entities.Item;
 import com.kiddygambles.services.Interfaces.ICaseLogic;
-import jdk.internal.joptsimple.internal.Strings;
+import org.assertj.core.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

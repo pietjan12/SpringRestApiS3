@@ -1,4 +1,4 @@
-rootProject.name = 'kiddygambles'
+rootProject.name = 'com.kiddygambles'
 include 'Domain'
 include 'Data'
 include 'Services'

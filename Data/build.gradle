@@ -1,3 +1,13 @@
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+    baseName = "com.kiddygambles-data"
+    version = "1.0"
+}
+
 dependencies{
     compile("org.springframework.boot:spring-boot-starter-test")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -5,8 +15,4 @@ dependencies{
     runtime('com.microsoft.sqlserver:mssql-jdbc')
 
     compile project(':Domain')
-}
-
-jar {
-    enabled = true
 }

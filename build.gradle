@@ -7,11 +7,6 @@ buildscript {
     }
 }
 
-plugins {
-    id 'java'
-    id 'org.jetbrains.intellij' version '0.3.10'
-}
-
 subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
@@ -19,19 +14,9 @@ subprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
 
-    group 'com.kiddygambles'
-    version '1.0-VERYEARLYALPHABOI'
     sourceCompatibility = 1.8
-    targetCompatibility = 1.8
 
     repositories {
         mavenCentral()
     }
-}
-
-dependencies {
-    compile project(':Domain')
-    compile project(':Data')
-    compile project(':Services')
-    compile project(':Web')
 }
