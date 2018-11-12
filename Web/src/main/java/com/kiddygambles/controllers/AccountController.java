@@ -19,17 +19,6 @@ public class AccountController {
         this.accountLogic = accountLogic;
     }
 
-    @PostMapping(path = "/add")
-    public ResponseEntity<Account> createUser(@RequestBody Account account) throws IllegalArgumentException, NullPointerException {
-        Account createdAccount = accountLogic.CreateUser(account);
-        return new ResponseEntity<>(createdAccount, HttpStatus.OK);
-    }
-
-    @DeleteMapping(path = "/delete/{id}")
-    public void deleteUser(@PathVariable("id") int userToDeleteID, Principal user) throws IllegalArgumentException, NullPointerException {
-        accountLogic.DeleteUser(user, userToDeleteID);
-    }
-
     @GetMapping(path="/{id}")
     public ResponseEntity<Account> GetUserById(@PathVariable("id") int userID, Principal user) throws IllegalArgumentException, NullPointerException {
         Account createdAccount = accountLogic.GetUser(user, userID);

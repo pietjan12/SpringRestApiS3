@@ -13,19 +13,4 @@ public interface IAccountLogic {
      * @throws IllegalArgumentException if userID is not found in our system
      */
     Account GetUser(Principal user, int userID);
-    /**
-     * Login User based on information given
-     * @param account the account object translated from JSON into an Account object.
-     * @return nothing if everything goes correct
-     * @throws FailedLoginException if account contains wrong information
-     */
-    Account CreateUser(Account account);
-    /**
-     * Delete user with information given
-     * @param user The claim of the logged in user based on JWT token. (For possible role based authorization).
-     * @param userID the userid of the user you want to remove
-     * @return nothing if everything goes correct, in most cases the client side should already have all necessary data
-     * @throws IllegalArgumentException if account was not found
-     */
-    void DeleteUser(Principal user, int userID);
 }

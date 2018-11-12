@@ -17,24 +17,23 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String username;
+    private int accountID;
 
-    @JsonProperty("password")
-    @JsonIgnore
-    private String password;
     //Custom currency op gambling platform.
     private int tokens;
 
-    //Alle skins die de gebruiker momenteel heeft. TODO: KOMT IN DE TOEKOMST VANUIT MARTIJN ZIJN MODULE
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "accountItems",
-            joinColumns = {@JoinColumn(name = "AccountID")},
-            inverseJoinColumns = {@JoinColumn(name = "ItemID")}
-    )
     private List<Item> items = new ArrayList<>();
 
     public int getId() {
         return id;
+    }
+
+    public int getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(int tokens) {
+        this.tokens = tokens;
     }
 
     public String getUsername() {
@@ -45,21 +44,12 @@ public class Account {
         this.username = username;
     }
 
-    @JsonIgnore
-    public String getPassword() {
-        return password;
+    public int getAccountID() {
+        return accountID;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public int getTokens() {
-        return tokens;
-    }
-
-    public void setTokens(int tokens) {
-        this.tokens = tokens;
+    public void setAccountID(int accountID) {
+        this.accountID = accountID;
     }
 
     public List<Item> getItems() {
