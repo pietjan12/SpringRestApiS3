@@ -3,7 +3,7 @@ package com.kiddygambles.services;
 import com.kiddygambles.data.IAccountRepository;
 import com.kiddygambles.domain.entities.Account;
 import net.minidev.json.JSONValue;
-import org.json.JSONException;
+import org.assertj.core.util.Strings;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -36,25 +36,28 @@ public class AuthLogic implements UserDetailsService {
         //fetch account from authorization server
         JSONObject account = retrieveAccountData(username);
 
-        try {
-            //Try and get id and username from json object and find id in database
-            int accountID = account.getInt("id");
-            String accountName = account.getString("username");
+        //Get optional values from json object
+        int accountID = account.optInt("id");
+        String accountName = account.optString("username");
+        String password = account.optString("password");
 
-            Optional<Account> foundAccount = accountRepository.findById(accountID);
-
-            //check if user has logged in to our gambling service before, if not create new account for them
-            if(!foundAccount.isPresent()) {
-                Account newAccount = new Account();
-                newAccount.setAccountID(accountID);
-                newAccount.setUsername(accountName);
-                accountRepository.save(newAccount);
-            }
-
-            return new User(accountName, account.getString("password"), emptyList());
-        } catch (JSONException e) {
-            throw new UsernameNotFoundException("something went wrong, please contact support");
+        //check if values are indeed present
+        if(accountID == 0 || Strings.isNullOrEmpty(accountName) || Strings.isNullOrEmpty(password)) {
+            throw new UsernameNotFoundException("Something went wrong, please contact support");
         }
+
+        Optional<Account> foundAccount = accountRepository.findById(accountID);
+
+        //check if user has logged in to our gambling service before, if not create new account for them
+        if (!foundAccount.isPresent()) {
+            Account newAccount = new Account();
+            newAccount.setAccountID(accountID);
+            newAccount.setUsername(accountName);
+            accountRepository.save(newAccount);
+        }
+        return new User(accountName, password, emptyList());
+
+
     }
 
     private JSONObject retrieveAccountData(String username) {
@@ -63,8 +66,8 @@ public class AuthLogic implements UserDetailsService {
 
         HttpEntity<?> httpEntity = new HttpEntity<>("" , headers);
 
-        RestTemplate restcall = new RestTemplate();
-        ResponseEntity<String> response = restcall.exchange("localhost:8888/account/" + username, HttpMethod.GET, httpEntity, String.class);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange("localhost:8888/account/" + username, HttpMethod.GET, httpEntity, String.class);
 
         //check if status code is correct
         if(response.getStatusCode() != HttpStatus.OK) {

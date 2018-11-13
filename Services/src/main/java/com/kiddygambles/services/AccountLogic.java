@@ -15,12 +15,10 @@ import java.util.Optional;
 public class AccountLogic implements IAccountLogic {
 
     private IAccountRepository accountContext;
-    private BCryptPasswordEncoder bCrypt;
 
     @Autowired
-    public AccountLogic(IAccountRepository accountContext, BCryptPasswordEncoder bCrypt) {
+    public AccountLogic(IAccountRepository accountContext) {
         this.accountContext = accountContext;
-        this.bCrypt = bCrypt;
     }
 
     @Override
@@ -40,5 +38,4 @@ public class AccountLogic implements IAccountLogic {
 
         return foundAccount.get();
     }
-
 }

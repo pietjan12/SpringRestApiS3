@@ -33,10 +33,10 @@ public class CaseLogic implements ICaseLogic {
     }
 
     @Override
-    public Iterable<Case> getAllCases() throws NullPointerException {
-        Iterable<Case> allCases = caseContext.findAll();
+    public List<Case> getAllCases() throws NullPointerException {
+        List<Case> allCases = caseContext.findAll();
         //Controleren of lijst niet leeg is
-        if(allCases.spliterator().getExactSizeIfKnown() < 1) {
+        if(allCases.size() <= 0) {
             throw new NullPointerException("No cases found");
         }
 

@@ -1,5 +1,8 @@
 package com.kiddygambles.domain.entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,12 +10,16 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@Getter
 public class Case {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Setter
     private String name;
+    @Setter
     private String description;
+    @Setter
     private Float price;
 
     //Items die behoren tot bepaalde cases
@@ -24,6 +31,9 @@ public class Case {
     )
     private List<Item> items = new ArrayList<>();
 
+    @OneToMany(mappedBy = "wonCase")
+    private Set<WinningDetails> history;
+
     public Case() {
 
     }
@@ -31,38 +41,6 @@ public class Case {
     public Case(String name, String description, Float price) {
         this.name = name;
         this.description = description;
-        this.price = price;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Float getPrice() {
-        return price;
-    }
-
-    public void setPrice(Float price) {
         this.price = price;
     }
 }

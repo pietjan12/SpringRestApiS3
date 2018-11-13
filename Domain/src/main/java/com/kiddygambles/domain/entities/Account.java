@@ -1,58 +1,26 @@
 package com.kiddygambles.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
+//Account class to store data from authorization server, also stores gambling specific token balance.
 @Entity
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+@Getter
+@Setter
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String username;
-    private int accountID;
 
-    //Custom currency op gambling platform.
+    private int id;
+    private int accountID;
+    private String username;
+    //Custom currency for gambling
     private int tokens;
 
-    private List<Item> items = new ArrayList<>();
+    public Account() {
 
-    public int getId() {
-        return id;
     }
 
-    public int getTokens() {
-        return tokens;
-    }
-
-    public void setTokens(int tokens) {
-        this.tokens = tokens;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public int getAccountID() {
-        return accountID;
-    }
-
-    public void setAccountID(int accountID) {
-        this.accountID = accountID;
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
 }
