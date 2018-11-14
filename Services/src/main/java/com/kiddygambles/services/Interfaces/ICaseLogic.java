@@ -8,6 +8,6 @@ import java.util.List;
 public interface ICaseLogic {
     Case getCase(int id);
     Iterable<Case>  getAllCases();
-    void createCase(Case caseToCreate);
+    void createCase(String caseName, String caseDescription, int price);
     List<Item> getWinHistory(int caseID);
 }

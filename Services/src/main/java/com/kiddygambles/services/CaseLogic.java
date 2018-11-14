@@ -44,12 +44,13 @@ public class CaseLogic implements ICaseLogic {
     }
 
     @Override
-    public void createCase(Case caseToCreate) throws IllegalArgumentException {
+    public void createCase(String caseName, String caseDescription, int price) {
 
-        if(Strings.isNullOrEmpty(caseToCreate.getName()) || Strings.isNullOrEmpty(caseToCreate.getDescription()) || caseToCreate.getItems().size() <= 0) {
+        if(Strings.isNullOrEmpty(caseName) || Strings.isNullOrEmpty(caseDescription) || price <= 0) {
             throw new IllegalArgumentException("Case parameters name, description and items cannot be null!");
         }
 
+        Case caseToCreate = new Case(caseName, caseDescription, price);
         caseContext.save(caseToCreate);
     }
 

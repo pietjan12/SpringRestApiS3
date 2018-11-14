@@ -76,10 +76,6 @@ public class GamblingLogic implements IGamblingLogic {
                 .add("itemID", itemID)
                 .build().toString();
 
-        ResponseEntity<String> saveItemCall = restCallHelper.makePostRestCall(inventoryURL + "/inventory/add", token, jsonData);
-
-        if(saveItemCall.getStatusCode() != HttpStatus.OK) {
-            throw new RuntimeException("Something went wrong on our end, please contact support!");
-        }
+        restCallHelper.makePostRestCall(inventoryURL + "/inventory/add", token, jsonData);
     }
 }

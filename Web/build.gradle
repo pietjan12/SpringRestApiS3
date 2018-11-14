@@ -12,6 +12,7 @@ dependencies {
     //Swagger implementeren in spring boot voor API documentatie
     compile "io.springfox:springfox-swagger2:2.9.2"
     compile 'io.springfox:springfox-swagger-ui:2.9.2'
+    compileOnly 'org.projectlombok:lombok:1.18.4'
 
     compile project(':Domain')
     compile project(':Data')

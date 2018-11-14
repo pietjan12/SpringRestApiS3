@@ -22,7 +22,13 @@ public class RestCallHelper {
                 .body(data);
 
         RestTemplate restCall = new RestTemplate();
-        return restCall.exchange(request, String.class);
+        ResponseEntity<String> response = restCall.exchange(request, String.class);
+
+        if(response.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Something went terribly wrong on our end, please contact support!");
+        }
+
+        return response;
     }
 
     //TODO TESTEN OF DEZE GENERIC METHOD WERKT.
@@ -33,6 +39,12 @@ public class RestCallHelper {
         HttpEntity<?> httpEntity = new HttpEntity<>("" , headers);
 
         RestTemplate restcall = new RestTemplate();
-        return restcall.exchange(url, HttpMethod.GET, httpEntity, type);
+        ResponseEntity<T> response =  restcall.exchange(url, HttpMethod.GET, httpEntity, type);
+
+        if(response.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Something went terribly wrong on our end, please contact support!");
+        }
+
+        return response;
     }
 }

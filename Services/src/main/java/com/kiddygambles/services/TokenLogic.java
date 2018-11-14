@@ -70,10 +70,6 @@ public class TokenLogic implements ITokenLogic {
     private void checkBalance(String token, int amount) {
         ResponseEntity<Float> balanceResponse = restCallHelper.makeGetRestCall(bankURL + "/bank/balance", token, Float.class);
 
-        if(balanceResponse.getStatusCode() != HttpStatus.OK) {
-            throw new RuntimeException("Something went wrong on our side, please contact support!");
-        }
-
         float myBalance = balanceResponse.getBody();
 
         if((myBalance / 10) < amount) {
@@ -96,10 +92,5 @@ public class TokenLogic implements ITokenLogic {
                         .build().toString();
 
         ResponseEntity<String> balanceTransferCall = restCallHelper.makePostRestCall(bankURL + "/bank/transfer", token, jsonData);
-
-        //Controleren of call goed uitgevoerd is.
-        if(balanceTransferCall.getStatusCode() != HttpStatus.OK) {
-            throw new RuntimeException("transferring funds failed, please contact support!");
-        }
     }
 }

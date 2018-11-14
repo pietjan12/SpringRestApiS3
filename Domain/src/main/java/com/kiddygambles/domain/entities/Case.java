@@ -20,7 +20,7 @@ public class Case {
     @Setter
     private String description;
     @Setter
-    private Float price;
+    private int price;
 
     //Items die behoren tot bepaalde cases
     @ManyToMany(fetch = FetchType.LAZY)
@@ -38,7 +38,7 @@ public class Case {
 
     }
 
-    public Case(String name, String description, Float price) {
+    public Case(String name, String description, int price) {
         this.name = name;
         this.description = description;
         this.price = price;

@@ -21,7 +21,6 @@ public class AccountController {
 
     @GetMapping(path="/{id}")
     public ResponseEntity<Account> GetUserById(@PathVariable("id") int userID, Principal user) throws IllegalArgumentException, NullPointerException {
-        Account createdAccount = accountLogic.GetUser(user, userID);
-        return new ResponseEntity<>(createdAccount, HttpStatus.OK);
+        return new ResponseEntity<>(accountLogic.GetUser(user, userID), HttpStatus.OK);
     }
 }
