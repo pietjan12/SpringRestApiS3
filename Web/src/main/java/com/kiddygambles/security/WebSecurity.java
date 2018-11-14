@@ -25,9 +25,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public WebSecurity(@Qualifier("authLogic") UserDetailsService userDetailsImpl, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public WebSecurity(@Qualifier("authLogic") UserDetailsService userDetailsImpl) {
         this.userDetailsImpl = userDetailsImpl;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
     }
 
     @Override

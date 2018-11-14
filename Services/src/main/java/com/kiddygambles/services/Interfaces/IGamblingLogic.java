@@ -1,9 +1,7 @@
 package com.kiddygambles.services.Interfaces;
 
-import com.kiddygambles.domain.entities.WinningDetails;
-
-import java.security.Principal;
+import com.kiddygambles.domain.entities.WinHistory;
 
 public interface IGamblingLogic {
-    WinningDetails openCase(Principal user, int caseID);
+    WinHistory openCase(String username, String token, int caseID);
 }

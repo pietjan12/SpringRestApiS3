@@ -13,6 +13,9 @@ import javax.json.Json;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.kiddygambles.services.Constants.KiddyAPIConstants.bankURL;
+import static com.kiddygambles.services.Constants.KiddyAPIConstants.gamblingBankNumber;
+
 
 @Service
 //TODO : CLEAN THIS SHIT
@@ -31,7 +34,6 @@ public class TokenLogic implements ITokenLogic {
     public void buyToken(Principal user, String token, int amount) {
         Account account = getUser(user.getName());
 
-        //TODO : Call maken naar bank of er genoeg balans
         checkBalance(token, amount);
 
         transferFunds(token, (amount * 10));
@@ -66,8 +68,7 @@ public class TokenLogic implements ITokenLogic {
      * @throws IllegalArgumentException if the user does not have enough balance to cover the cost
      */
     private void checkBalance(String token, int amount) {
-        //TODO : CONSTANT VOOR BANKURL MAKEN
-        ResponseEntity<Float> balanceResponse = restCallHelper.makeGetRestCall("http://safdkasdkask.nep/bank/balance", token, Float.class);
+        ResponseEntity<Float> balanceResponse = restCallHelper.makeGetRestCall(bankURL + "/bank/balance", token, Float.class);
 
         if(balanceResponse.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Something went wrong on our side, please contact support!");
@@ -88,19 +89,17 @@ public class TokenLogic implements ITokenLogic {
      * @throws RuntimeException  if something went wrong server side
      */
     private void transferFunds(String token, int amount) {
-        //TODO : geld transfen naar "GAMBLING BANK NUMMER"
         //create json string to send as data
         String jsonData = Json.createObjectBuilder()
-                        .add("receiverID", "BANKVANGAMBLINGHIER")
+                        .add("receiverID", gamblingBankNumber)
                         .add("price", amount)
                         .build().toString();
 
-        ResponseEntity<String> balanceTransferCall = restCallHelper.makePostRestCall("http://safds.nep/bank/transfer", token, jsonData);
+        ResponseEntity<String> balanceTransferCall = restCallHelper.makePostRestCall(bankURL + "/bank/transfer", token, jsonData);
 
         //Controleren of call goed uitgevoerd is.
         if(balanceTransferCall.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("transferring funds failed, please contact support!");
         }
     }
-
 }

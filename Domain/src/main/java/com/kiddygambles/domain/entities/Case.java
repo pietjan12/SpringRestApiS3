@@ -5,11 +5,11 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
+@Table(name = "Lootcase")
 @Getter
 public class Case {
     @Id
@@ -32,7 +32,7 @@ public class Case {
     private List<Item> items = new ArrayList<>();
 
     @OneToMany(mappedBy = "wonCase")
-    private Set<WinningDetails> history;
+    private Set<WinHistory> history;
 
     public Case() {
 

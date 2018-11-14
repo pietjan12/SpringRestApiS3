@@ -19,6 +19,9 @@ public class Item {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
     private Set<Case> cases = new HashSet<>();
 
+    @OneToMany(mappedBy = "item")
+    private Set<WinHistory> winHistories;
+
     public Item() {}
 
     public Item(int itemID){

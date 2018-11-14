@@ -18,7 +18,7 @@ public class RestCallHelper {
         RequestEntity<String> request = RequestEntity
                 .post(uri)
                 .accept(MediaType.APPLICATION_JSON)
-                .header("Authorization",token)
+                .header("Authorization", token)
                 .body(data);
 
         RestTemplate restCall = new RestTemplate();

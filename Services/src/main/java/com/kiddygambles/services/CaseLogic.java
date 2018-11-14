@@ -45,6 +45,7 @@ public class CaseLogic implements ICaseLogic {
 
     @Override
     public void createCase(Case caseToCreate) throws IllegalArgumentException {
+
         if(Strings.isNullOrEmpty(caseToCreate.getName()) || Strings.isNullOrEmpty(caseToCreate.getDescription()) || caseToCreate.getItems().size() <= 0) {
             throw new IllegalArgumentException("Case parameters name, description and items cannot be null!");
         }
