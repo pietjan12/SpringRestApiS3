@@ -19,7 +19,7 @@ public class CaseController {
 
     @PostMapping(path = "")
     public ResponseEntity<Case> createCase(@RequestBody CaseRequestModel caseRequestModel) {
-        return new ResponseEntity<>(caseLogic.createCase(caseRequestModel);, HttpStatus.OK);
+        return new ResponseEntity<>(caseLogic.createCase(caseRequestModel.getName(), caseRequestModel.getDescription(), caseRequestModel.getPrice()), HttpStatus.OK);
     }
 
     @GetMapping(path = "{id}")

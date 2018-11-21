@@ -1,6 +1,8 @@
 package com.kiddygambles.wrappers;
 
+import lombok.Getter;
 
+@Getter
 public class CaseRequestModel {
     private String name;
     private String description;
