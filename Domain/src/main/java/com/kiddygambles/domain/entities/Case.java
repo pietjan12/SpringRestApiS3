@@ -32,7 +32,7 @@ public class Case {
     private List<Item> items = new ArrayList<>();
 
     @OneToMany(mappedBy = "wonCase")
-    private Set<WinHistory> history;
+    private Set<CaseHistory> history;
 
     public Case() {
 

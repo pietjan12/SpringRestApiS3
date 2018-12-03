@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping(path = "/account")
+@RequestMapping(path = "/accounts")
 public class AccountController {
     private IAccountLogic accountLogic;
 

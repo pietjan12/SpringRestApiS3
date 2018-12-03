@@ -2,6 +2,7 @@ package com.kiddygambles.domain.entities;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.hateoas.ResourceSupport;
 
 import javax.persistence.*;
 
@@ -11,9 +12,6 @@ import javax.persistence.*;
 @Setter
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-
-    private int id;
     private int accountID;
     private String username;
     //Custom currency for gambling

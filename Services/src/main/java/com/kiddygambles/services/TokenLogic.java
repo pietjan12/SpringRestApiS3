@@ -43,6 +43,7 @@ public class TokenLogic implements ITokenLogic {
         accountContext.save(account);
     }
 
+
     /**
      * Gets the user and automatically checks if he is indeed present in the database
      * @param username the username taken from the jwt claim subject

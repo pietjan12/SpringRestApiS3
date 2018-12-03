@@ -11,8 +11,6 @@ import java.util.Set;
 @Getter
 public class Item {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
     private int itemID;
 
     //Cases waarvan dit item een onderdeel is.
@@ -20,7 +18,7 @@ public class Item {
     private Set<Case> cases = new HashSet<>();
 
     @OneToMany(mappedBy = "item")
-    private Set<WinHistory> winHistories;
+    private Set<CaseHistory> winHistories;
 
     public Item() {}
 

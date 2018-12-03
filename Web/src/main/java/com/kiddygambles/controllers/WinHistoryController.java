@@ -2,7 +2,7 @@ package com.kiddygambles.controllers;
 
 public class WinHistoryController {
 
-    //public Set<WinHistory> Winnings GetWinnings(@Requestparam int id) {
+    //public Set<CaseHistory> Winnings GetWinnings(@Requestparam int id) {
 
     //}
 }
