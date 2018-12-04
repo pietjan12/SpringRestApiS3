@@ -2,7 +2,6 @@ package com.kiddygambles.domain.entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.hateoas.ResourceSupport;
 
 import javax.persistence.*;
 
@@ -19,5 +18,10 @@ public class Account {
 
     public Account() {
 
+    }
+
+    public Account(int accountID, String username) {
+        this.accountID = accountID;
+        this.username = username;
     }
 }

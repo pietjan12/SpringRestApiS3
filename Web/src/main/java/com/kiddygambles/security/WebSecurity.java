@@ -1,5 +1,6 @@
 package com.kiddygambles.security;
 
+import com.kiddygambles.services.AuthLogic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -15,20 +16,16 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-
-
 //https://auth0.com/blog/implementing-jwt-authentication-on-spring-boot/
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
-
-    private UserDetailsService userDetailsImpl;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private JwtAuthenticationProvider authenticationProvider;
 
     @Autowired
-    public WebSecurity(@Qualifier("authLogic") UserDetailsService userDetailsImpl) {
-        this.userDetailsImpl = userDetailsImpl;
-        this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    public WebSecurity(AuthLogic userDetailsImpl) {
+        this.authenticationProvider = new JwtAuthenticationProvider(userDetailsImpl);
     }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -44,7 +41,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsImpl).passwordEncoder(bCryptPasswordEncoder);
+        auth.authenticationProvider(authenticationProvider);
     }
 
     @Bean

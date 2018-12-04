@@ -1,15 +1,13 @@
 package com.kiddygambles.security;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kiddygambles.services.Helper.RestCallHelper;
-import com.kiddygambles.wrappers.loginWrapper;
+import com.kiddygambles.domain.principal.JwtUser;
+import com.kiddygambles.wrappers.LoginWrapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -18,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -35,7 +32,6 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import static com.kiddygambles.security.SecurityConstants.SecurityConstants.JWTKEY;
-import static com.kiddygambles.services.Constants.KiddyAPIConstants.AUTHHEADER;
 import static com.kiddygambles.services.Constants.KiddyAPIConstants.inventoryURL;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -49,8 +45,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
         try{
-            loginWrapper creds = new ObjectMapper()
-                    .readValue(req.getInputStream(), loginWrapper.class);
+            LoginWrapper creds = new ObjectMapper()
+                    .readValue(req.getInputStream(), LoginWrapper.class);
 
             //Get inventory account credentials, and if they do not exist yet, create them for the user.
             getInventoryAccount(creds.getUsername(), creds.getPassword());
@@ -75,10 +71,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Date expirationDate = Date.valueOf(LocalDate.now().plusDays(1));
         Date currentDate = Date.valueOf(LocalDate.now());
 
+        JwtUser user = (JwtUser)auth.getPrincipal();
         //get username and make a claim with roles
-        String subject = ((User)auth.getPrincipal()).getUsername();
+        String subject = user.getUsername();
         Claims claim = Jwts.claims().setSubject(subject);
         claim.put("scopes", auth.getAuthorities().stream().map(s -> s.toString()).collect(Collectors.toList()));
+        claim.put("userID", user.getUserID());
 
         //build token
         String token =  Jwts.builder()

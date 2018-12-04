@@ -24,47 +24,31 @@ public class RouletteLogic implements IRouletteLogic {
     }
 
     @Override
-    public GameHistory playRoulette(String username, int betAmount, Integer intChoice) {
+    public GameHistory playRoulette(String username, int betAmount, Integer intChoice, String stringChoice) {
+        //check if values are present
+        if(intChoice == null && stringChoice == null) {
+            throw new IllegalArgumentException("No bet choice given!");
+        }
         //check if the bet is valid
         checkBet(username, betAmount);
 
-        GameHistory history = new GameHistory();
         //make a roulette roll, values between 0 - 36
         int rolledNumber = lootRollHelper.getRandomIntRoll(0, 36);
+        GameHistory history = new GameHistory();
+        history.setRolledNumber(rolledNumber);
 
         //Most valued win first
         if (intChoice.equals(rolledNumber)) {
             //won 35 : 1
             history.setWon(true);
             history.setWonTokens(betAmount * 35);
-
             addTokens(username, history.getWonTokens());
-        }
-
-        history.setRolledNumber(rolledNumber);
-
-        return history;
-    }
-
-    @Override
-    public GameHistory playRoulette(String username, int betAmount, String stringChoice) {
-        //check if the bet is valid
-        checkBet(username, betAmount);
-
-        GameHistory history = new GameHistory();
-
-        int rolledNumber = lootRollHelper.getRandomIntRoll(0, 36);
-        String colorValue = RouletteConstants.numberWithColors.get(rolledNumber);
-
-        if(stringChoice.equals(colorValue)) {
-            //won 2 : 1
-            history.setWonTokens(betAmount * 2);
+        } else if(stringChoice.equals(RouletteConstants.numberWithColors.get(rolledNumber))) {
             history.setWon(true);
-
+            history.setWonTokens(betAmount * 2);
             addTokens(username, history.getWonTokens());
         }
 
-        history.setRolledNumber(rolledNumber);
 
         return history;
     }

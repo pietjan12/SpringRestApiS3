@@ -4,7 +4,7 @@ import com.kiddygambles.domain.entities.GameHistory;
 import com.kiddygambles.services.Interfaces.IHiLowLogic;
 import com.kiddygambles.services.Interfaces.IRouletteLogic;
 import com.kiddygambles.wrappers.HiLowRequestModel;
-import com.kiddygambles.wrappers.RouletteIntRequestModel;
+import com.kiddygambles.wrappers.RouletteRequestModel;
 import com.kiddygambles.wrappers.RouletteStringRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,13 +29,8 @@ public class GamesController {
     }
 
     @PostMapping(path = "/Roulette")
-    public ResponseEntity<GameHistory> playRoulette(@RequestBody RouletteIntRequestModel reqModel, Principal user) {
-        return new ResponseEntity<>(rouletteLogic.playRoulette(user.getName() ,reqModel.getBet(), reqModel.getIntChoice()), HttpStatus.CREATED);
-    }
-
-    @PostMapping(path = "/Roulette")
-    public ResponseEntity<GameHistory> playRoulette(@RequestBody RouletteStringRequestModel reqModel, Principal user) {
-        return new ResponseEntity<>(rouletteLogic.playRoulette(user.getName(),reqModel.getBet(), reqModel.getStringChoice()), HttpStatus.CREATED);
+    public ResponseEntity<GameHistory> playRoulette(@RequestBody RouletteRequestModel reqModel, Principal user) {
+        return new ResponseEntity<>(rouletteLogic.playRoulette(user.getName() ,reqModel.getBet(), reqModel.getIntChoice(), reqModel.getStringChoice()), HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/HiLow")
