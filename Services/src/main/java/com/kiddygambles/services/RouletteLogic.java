@@ -57,7 +57,7 @@ public class RouletteLogic implements IRouletteLogic {
     private void addTokens(String username, int amountToAdd) {
         Account account = accountRepository.findByUsername(username).get();
         account.setTokens(account.getTokens() + amountToAdd);
-
+        accountRepository.save(account);
 
     }
 

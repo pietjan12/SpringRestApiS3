@@ -2,7 +2,6 @@ package com.kiddygambles.services;
 
 import com.kiddygambles.data.IAccountRepository;
 import com.kiddygambles.domain.entities.Account;
-import com.kiddygambles.domain.principal.JwtUser;
 import com.kiddygambles.domain.principal.JwtUserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import static java.util.Collections.emptyList;
 
 @Service
 public class AuthLogic {

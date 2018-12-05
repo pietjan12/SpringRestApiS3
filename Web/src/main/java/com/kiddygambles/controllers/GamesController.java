@@ -28,12 +28,12 @@ public class GamesController {
         this.hiLowLogic = hiLowLogic;
     }
 
-    @PostMapping(path = "/Roulette")
+    @PostMapping(path = "/roulette")
     public ResponseEntity<GameHistory> playRoulette(@RequestBody RouletteRequestModel reqModel, Principal user) {
         return new ResponseEntity<>(rouletteLogic.playRoulette(user.getName() ,reqModel.getBet(), reqModel.getIntChoice(), reqModel.getStringChoice()), HttpStatus.CREATED);
     }
 
-    @PostMapping(path = "/HiLow")
+    @PostMapping(path = "/hilow")
     public ResponseEntity<GameHistory> playHiLow(@RequestBody HiLowRequestModel reqModel, Principal user) {
         return new ResponseEntity<>(hiLowLogic.playHiLow(user.getName(), reqModel.getBet(), reqModel.getCurrentCardNumber(), reqModel.isHigher()), HttpStatus.CREATED);
     }
