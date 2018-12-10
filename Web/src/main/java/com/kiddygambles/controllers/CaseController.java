@@ -21,6 +21,7 @@ public class CaseController {
         this.caseLogic = caseLogic;
     }
 
+
     @PostMapping(path = "")
     public ResponseEntity<Case> createCase(@RequestBody CaseRequestModel caseRequestModel) {
         return new ResponseEntity<>(caseLogic.createCase(caseRequestModel.getName(), caseRequestModel.getDescription(), caseRequestModel.getPrice()), HttpStatus.CREATED);
@@ -34,6 +35,17 @@ public class CaseController {
     @GetMapping(path = "")
     public ResponseEntity<Iterable<Case>> getAllCases() {
         return new ResponseEntity<>(caseLogic.getAllCases(), HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<Case> updateCase(@PathVariable("id") int id, @RequestBody CaseRequestModel model) {
+        return new ResponseEntity<>(caseLogic.updateCase(id, model.getName(), model.getDescription(),model.getPrice()), HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> deleteCase(@PathVariable("id") int id) {
+        caseLogic.deleteCase(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //Show list of recently won items before websocket server takes over to update it.

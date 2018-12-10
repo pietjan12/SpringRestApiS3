@@ -51,13 +51,27 @@ public class CaseLogic implements ICaseLogic {
 
     @Override
     public Case createCase(String caseName, String caseDescription, int price) {
-
-        if(Strings.isNullOrEmpty(caseName) || Strings.isNullOrEmpty(caseDescription) || price <= 0) {
-            throw new IllegalArgumentException("Case parameters name, description and items cannot be null!");
-        }
+        checkInput(caseName, caseDescription, price);
 
         Case caseToCreate = new Case(caseName, caseDescription, price);
         return caseContext.save(caseToCreate);
+    }
+
+    @Override
+    public void deleteCase(int caseID) {
+        caseContext.delete(checkCaseExists(caseID));
+    }
+
+    @Override
+    public Case updateCase(int caseID, String caseName, String caseDescription, int price) {
+        checkInput(caseName, caseDescription, price);
+
+        Case foundCase = checkCaseExists(caseID);
+        foundCase.setName(caseName);
+        foundCase.setDescription(caseDescription);
+        foundCase.setPrice(price);
+
+        return caseContext.save(foundCase);
     }
 
     @Override
@@ -95,6 +109,12 @@ public class CaseLogic implements ICaseLogic {
                 .build().toString();
 
         restCallHelper.makePostRestCall(inventoryURL + "/inventory/add", token, jsonData);
+    }
+
+    private void checkInput(String caseName, String caseDescription, int price) {
+        if(Strings.isNullOrEmpty(caseName) || Strings.isNullOrEmpty(caseDescription) || price <= 0) {
+            throw new IllegalArgumentException("Case parameters name, description and items cannot be null!");
+        }
     }
 
     private Case checkCaseExists(int caseID) {
