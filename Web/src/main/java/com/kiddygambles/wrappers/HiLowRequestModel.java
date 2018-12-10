@@ -5,6 +5,6 @@ import lombok.Getter;
 @Getter
 public class HiLowRequestModel {
     private int bet;
-    private boolean higher;
+    private boolean choice;
     private int currentCardNumber;
 }

@@ -26,18 +26,20 @@ public class HiLowLogic implements IHiLowLogic {
         //check if bet is valid and take tokens from user
         checkBet(username, betAmount);
 
-        GameHistory gameHistory = new GameHistory();
-        //roll a random number
-        int rolledNumber = lootRollHelper.getRandomIntRoll(0, 13);
-        gameHistory.setRolledNumber(rolledNumber);
-
+        //roll a random number and determine outcome.
+        int rolledNumber = lootRollHelper.getRandomIntRoll(0, 12);
         boolean outcome = rolledNumber > currentCardNumber;
+
+        //create game history
+        GameHistory gameHistory = new GameHistory();
+        gameHistory.setRolledNumber(rolledNumber);
 
         if(higher == outcome) {
             //won 2:1
             gameHistory.setWon(true);
             gameHistory.setWonTokens(betAmount * 2);
             //add tokens to user.
+
             addTokens(username, gameHistory.getWonTokens());
         }
 

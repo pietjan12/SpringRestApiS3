@@ -35,6 +35,6 @@ public class GamesController {
 
     @PostMapping(path = "/hilow")
     public ResponseEntity<GameHistory> playHiLow(@RequestBody HiLowRequestModel reqModel, Principal user) {
-        return new ResponseEntity<>(hiLowLogic.playHiLow(user.getName(), reqModel.getBet(), reqModel.getCurrentCardNumber(), reqModel.isHigher()), HttpStatus.CREATED);
+        return new ResponseEntity<>(hiLowLogic.playHiLow(user.getName(), reqModel.getBet(), reqModel.getCurrentCardNumber(), reqModel.isChoice()), HttpStatus.CREATED);
     }
 }
