@@ -1,5 +1,7 @@
 package com.kiddygambles.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kiddygambles.data.IAccountRepository;
 import com.kiddygambles.domain.entities.Account;
 import com.kiddygambles.services.Helper.RestCallHelper;
@@ -18,9 +20,7 @@ import static com.kiddygambles.services.Constants.KiddyAPIConstants.gamblingBank
 
 
 @Service
-//TODO : CLEAN THIS SHIT
 public class TokenLogic implements ITokenLogic {
-    //Handelen van het omzetten van balans naar tokens waarde op account.
     private IAccountRepository accountContext;
     private RestCallHelper restCallHelper;
 
@@ -31,18 +31,18 @@ public class TokenLogic implements ITokenLogic {
     }
 
     @Override
-    public void buyToken(Principal user, String token, int amount) {
-        Account account = getUser(user.getName());
+    public void buyToken(String username, int senderID, int amount) {
+        Account account = getUser(username);
 
-        checkBalance(token, amount);
+        //get the ratio of tokens per balance, this differs based on how many you buy.
+        int ratio = determineTokenRatio(amount);
 
-        transferFunds(token, (amount * 10));
+        transferFunds(senderID, amount, ratio);
 
         //account tokens updaten en opslaan in database.
         account.setTokens(account.getTokens() + amount);
         accountContext.save(account);
     }
-
 
     /**
      * Gets the user and automatically checks if he is indeed present in the database
@@ -54,44 +54,42 @@ public class TokenLogic implements ITokenLogic {
         Optional<Account> foundAccount = accountContext.findByUsername(username);
 
         if(!foundAccount.isPresent()) {
-            throw new NullPointerException("Account not found");
+            throw new IllegalArgumentException("Account not found");
         }
 
         return foundAccount.get();
     }
 
-    /**
-     * Gets balance from rest call and checks if the value is enough to cover the wanted amount of gambling tokens
-     * @param token the Authorization token taken from the header, this is send with the request to the other API
-     * @param amount the amount of tokens you are looking to buy
-     * @return nothing, an exception with a correct error message is thrown if anything does not add up
-     * @throws RuntimeException if anything server side goes wrong
-     * @throws IllegalArgumentException if the user does not have enough balance to cover the cost
-     */
-    private void checkBalance(String token, int amount) {
-        ResponseEntity<Float> balanceResponse = restCallHelper.makeGetRestCall(bankURL + "/bank/balance", token, Float.class);
+    private int determineTokenRatio(int tokenAmount) {
+        int ratio = 100;
 
-        float myBalance = balanceResponse.getBody();
-
-        if((myBalance / 10) < amount) {
-            throw new IllegalArgumentException("you do not have enough balance to buy this amount of tokens");
+        if(tokenAmount > 500) {
+            ratio = 110;
         }
+
+        return ratio;
     }
 
     /**
      * transfers funds from users bank account to gambling bank account
-     * @param token the Authorization token taken from the header, this is send with the request to the other API
      * @param amount the amount of tokens you are looking to buy
      * @return nothing, an exception with a error message is thrown if anything does not add up
      * @throws RuntimeException  if something went wrong server side
      */
-    private void transferFunds(String token, int amount) {
-        //create json string to send as data
-        String jsonData = Json.createObjectBuilder()
-                        .add("receiverID", gamblingBankNumber)
-                        .add("price", amount)
-                        .build().toString();
+    private void transferFunds(int senderID, int amount, int tokenRatio) {
+        ObjectMapper mapper = new ObjectMapper();
 
-        ResponseEntity<String> balanceTransferCall = restCallHelper.makePostRestCall(bankURL + "/bank/transfer", token, jsonData);
+        float cost = (float)amount / (float)tokenRatio;
+        //create json string to send as data
+        ObjectNode myTransaction = mapper.createObjectNode();
+        myTransaction.put("senderID", senderID);
+        myTransaction.put("receiverID", gamblingBankNumber);
+        myTransaction.put("price", cost);
+
+        ResponseEntity<String> balanceTransferCall = restCallHelper.makePostRestCall(bankURL + "/bank/transfer", myTransaction.toString());
+
+        if(balanceTransferCall.getStatusCode() != HttpStatus.OK) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
     }
 }

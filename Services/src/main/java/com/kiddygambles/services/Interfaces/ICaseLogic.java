@@ -59,9 +59,8 @@ public interface ICaseLogic {
     /**
      * Open a case
      * @param username the user who wants to open a case
-     * @param token the JWT token of the user to pass to the inventory API
      * @param caseID the case you wish to open
      * @return
      */
-    CaseHistory openCase(String username, String token, int caseID);
+    CaseHistory openCase(String username, int caseID);
 }

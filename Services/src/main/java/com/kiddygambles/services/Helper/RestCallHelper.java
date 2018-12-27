@@ -21,30 +21,7 @@ public class RestCallHelper {
         this.request = request;
     }
 
-
-    public ResponseEntity<String> makePostRestCall(String url, String token, String data) {
-        //Use build in spring uri builder to avoid urisyntaxexception handling
-        URI uri = UriComponentsBuilder.fromUriString(url)
-                .build()
-                .toUri();
-
-        RequestEntity<String> request = RequestEntity
-                .post(uri)
-                .accept(MediaType.APPLICATION_JSON)
-                .header("Authorization", token)
-                .body(data);
-
-        RestTemplate restCall = new RestTemplate();
-        ResponseEntity<String> response = restCall.exchange(request, String.class);
-
-        if(response.getStatusCode() != HttpStatus.OK) {
-            throw new RuntimeException("Something went terribly wrong on our end, please contact support!");
-        }
-
-        return response;
-    }
-
-    public ResponseEntity<String> postCall(String url, String data) {
+    public ResponseEntity<String> makePostRestCall(String url, String data) {
         //Use build in spring uri builder to avoid urisyntaxexception handling
         URI uri = UriComponentsBuilder.fromUriString(url)
                 .build()
@@ -54,21 +31,17 @@ public class RestCallHelper {
 
         RequestEntity<String> request = RequestEntity
                 .post(uri)
-                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .header(AUTHHEADER, token)
                 .body(data);
 
         RestTemplate restCall = new RestTemplate();
         ResponseEntity<String> response = restCall.exchange(request, String.class);
 
-        if(response.getStatusCode() != HttpStatus.OK) {
-            throw new RuntimeException("Something went terribly wrong on our end, please contact support!");
-        }
-
         return response;
     }
 
-    public <T> ResponseEntity<T> getCall(String url, Class<T> type){
+    public <T> ResponseEntity<T> makeGetRestCall(String url, Class<T> type){
         //set the requested headers
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHHEADER, request.getHeader(AUTHHEADER));
@@ -79,28 +52,6 @@ public class RestCallHelper {
         //get call
         RestTemplate restCall = new RestTemplate();
         ResponseEntity<T> response = restCall.exchange(url, HttpMethod.GET, httpEntity, type);
-
-        //check if status code is correct
-        if(response.getStatusCode() != HttpStatus.OK){
-            throw new IllegalArgumentException(response.getBody().toString());
-        }
-
-        return response;
-    }
-
-    //TODO TESTEN OF DEZE GENERIC METHOD WERKT.
-    public <T> ResponseEntity<T> makeGetRestCall(String url, String token, Class<T> type) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
-
-        HttpEntity<?> httpEntity = new HttpEntity<>("" , headers);
-
-        RestTemplate restcall = new RestTemplate();
-        ResponseEntity<T> response =  restcall.exchange(url, HttpMethod.GET, httpEntity, type);
-
-        if(response.getStatusCode() != HttpStatus.OK) {
-            throw new RuntimeException("Something went terribly wrong on our end, please contact support!");
-        }
 
         return response;
     }

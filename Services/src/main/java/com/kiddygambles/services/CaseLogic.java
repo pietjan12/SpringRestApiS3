@@ -81,7 +81,7 @@ public class CaseLogic implements ICaseLogic {
     }
 
     @Override
-    public CaseHistory openCase(String username, String token, int caseID) {
+    public CaseHistory openCase(String username, int caseID) {
         //case ophalen en lootroll doen om item te bepalen.
         Case caseToOpen = getCase(caseID);
         double lootRoll = lootRollHelper.getRandomDoubleRoll(0,100);
@@ -96,19 +96,19 @@ public class CaseLogic implements ICaseLogic {
         caseContext.save(caseToOpen);
 
         //Save item to winning account
-        saveItemToAccount(token, item.getItemID());
+        saveItemToAccount(item.getItemID());
 
-        //return winningdetails to user.
+        //return winning details to user.
         return winHistory;
     }
 
-    private void saveItemToAccount(String token, int itemID) {
+    private void saveItemToAccount(int itemID) {
         //create json string to send as data
         String jsonData = Json.createObjectBuilder()
                 .add("itemID", itemID)
                 .build().toString();
 
-        restCallHelper.makePostRestCall(inventoryURL + "/inventory/add", token, jsonData);
+        restCallHelper.makePostRestCall(inventoryURL + "/inventory/add", jsonData);
     }
 
     private void checkInput(String caseName, String caseDescription, int price) {
