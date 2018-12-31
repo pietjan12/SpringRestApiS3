@@ -22,6 +22,19 @@ public class TokenHelper {
         accountRepository.save(account);
     }
 
+    public void removeTokens(String username, int amountToRemove) {
+        Optional<Account> foundAccount = accountRepository.findByUsername(username);
+
+        if(!foundAccount.isPresent()) {
+            throw new IllegalArgumentException("Account not found!");
+        }
+
+        Account account = foundAccount.get();
+        //remove tokens for bet.
+        account.setTokens(account.getTokens() - amountToRemove);
+        accountRepository.save(account);
+    }
+
     public void hasEnoughTokens(String username, int betAmount) {
         Optional<Account> foundAccount = accountRepository.findByUsername(username);
 
@@ -33,10 +46,6 @@ public class TokenHelper {
         if(account.getTokens() < betAmount) {
             throw new IllegalArgumentException("Account does not have enough tokens");
         }
-
-        //remove tokens for bet.
-        account.setTokens(account.getTokens() - betAmount);
-        accountRepository.save(account);
     }
 
 }

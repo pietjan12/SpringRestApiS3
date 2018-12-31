@@ -1,20 +1,30 @@
 package com.kiddygambles.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kiddygambles.data.IAccountRepository;
 import com.kiddygambles.data.ICaseRepository;
+import com.kiddygambles.domain.DTO.CaseDTO;
+import com.kiddygambles.domain.DTO.ItemDTO;
+import com.kiddygambles.domain.Enum.Rarity;
+import com.kiddygambles.domain.entities.Account;
 import com.kiddygambles.domain.entities.Case;
 import com.kiddygambles.domain.entities.CaseHistory;
 import com.kiddygambles.domain.entities.Item;
 import com.kiddygambles.services.Helper.LootRollHelper;
 import com.kiddygambles.services.Helper.RestCallHelper;
+import com.kiddygambles.services.Helper.TokenHelper;
 import com.kiddygambles.services.Interfaces.ICaseLogic;
 import org.assertj.core.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.json.Json;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.kiddygambles.services.Constants.KiddyAPIConstants.inventoryURL;
 
@@ -24,18 +34,32 @@ public class CaseLogic implements ICaseLogic {
     private IAccountRepository accountContext;
     private RestCallHelper restCallHelper;
     private LootRollHelper lootRollHelper;
+    private TokenHelper tokenHelper;
 
     @Autowired
-    public CaseLogic(ICaseRepository caseContext, IAccountRepository accountContext, RestCallHelper restCallHelper, LootRollHelper lootRollHelper) {
+    public CaseLogic(ICaseRepository caseContext, IAccountRepository accountContext, TokenHelper tokenHelper, RestCallHelper restCallHelper, LootRollHelper lootRollHelper) {
         this.caseContext = caseContext;
         this.accountContext = accountContext;
+        this.tokenHelper = tokenHelper;
         this.restCallHelper = restCallHelper;
         this.lootRollHelper = lootRollHelper;
     }
 
     @Override
-    public Case getCase(int id){
-        return checkCaseExists(id);
+    public CaseDTO getCase(int id){
+        Case myCase = checkCaseExists(id);
+
+        List<ItemDTO> items = new ArrayList<>();
+        //Get more details of items within case
+        for(Item i : myCase.getItems()) {
+            ResponseEntity<ItemDTO> item = restCallHelper.makeGetRestCall(inventoryURL + "/item/" + i.getItemID(), ItemDTO.class);
+            ItemDTO itemDTO = item.getBody();
+            itemDTO.setRarity(i.getRarity());
+            items.add(itemDTO);
+        }
+
+        CaseDTO caseDTO = new CaseDTO(myCase.getId(), myCase.getName(), myCase.getDescription(), myCase.getImage(), myCase.getPrice(), items, myCase.getHistory());
+        return caseDTO;
     }
 
     @Override
@@ -80,35 +104,63 @@ public class CaseLogic implements ICaseLogic {
         return myCase.getHistory();
     }
 
+    //================================================================================
+    // OPEN METHOD
+    //================================================================================
     @Override
     public CaseHistory openCase(String username, int caseID) {
-        //case ophalen en lootroll doen om item te bepalen.
-        Case caseToOpen = getCase(caseID);
-        double lootRoll = lootRollHelper.getRandomDoubleRoll(0,100);
-        //TODO : GEEN IDEE HOE IK DIT WIL DOEN, ITEMS ZIJN PERCENTAGE BASED EN KAN DUS NIET ZO GETTEN
-        Item item = caseToOpen.getItems().get(1);
+        //check if case exists
+        Case caseToOpen = checkCaseExists(caseID);
 
-        CaseHistory winHistory = new CaseHistory(item, lootRoll);
+        //check if user has enough tokens to open case
+        tokenHelper.hasEnoughTokens(username, caseToOpen.getPrice());
+
+        //lootroll doen om item te bepalen.
+        double lootRoll = lootRollHelper.getRandomDoubleRoll(0,100);
+        Item winningItem = generateWinningItem(lootRoll, caseToOpen.getItems());
+
+        //create winhistory
+        CaseHistory winHistory = new CaseHistory(winningItem, lootRoll);
 
         //save winning details to case as history
-        //caseToOpen.getHistory().add(winHistory);
-        //winHistory.setWonCase(caseToOpen);
+        caseToOpen.getHistory().add(winHistory);
+        winHistory.setWonCase(caseToOpen);
         caseContext.save(caseToOpen);
 
         //Save item to winning account
-        saveItemToAccount(item.getItemID());
+        saveItemToAccount(username, winningItem.getItemID());
 
-        //return winning details to user.
+        //remove tokens from account if everything went correctly
+        tokenHelper.removeTokens(username, caseToOpen.getPrice());
+
+        //return winningdetails to user.
         return winHistory;
     }
 
-    private void saveItemToAccount(int itemID) {
-        //create json string to send as data
-        String jsonData = Json.createObjectBuilder()
-                .add("itemID", itemID)
-                .build().toString();
 
-        restCallHelper.makePostRestCall(inventoryURL + "/inventory/add", jsonData);
+    //================================================================================
+    // HELPER METHODS
+    //================================================================================
+    private void saveItemToAccount(String username, int itemID) {
+        Account account = checkAccountExists(username);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        ObjectNode myWonItem = mapper.createObjectNode();
+        myWonItem.put("itemID", itemID);
+        myWonItem.put("accountID", account.getAccountID());
+
+        restCallHelper.makePostRestCall(inventoryURL + "/inventory", myWonItem.toString());
+    }
+
+    private Account checkAccountExists(String username) {
+        Optional<Account> foundAccount = accountContext.findByUsername(username);
+
+        if(!foundAccount.isPresent()) {
+            throw new NullPointerException("Account with username + " + username + " Not found");
+        }
+
+        return foundAccount.get();
     }
 
     private void checkInput(String caseName, String caseDescription, int price) {
@@ -125,5 +177,26 @@ public class CaseLogic implements ICaseLogic {
         }
 
         return foundCase.get();
+    }
+
+    private Item generateWinningItem(double rolledNumber, List<Item> caseItems) {
+        Rarity rarity;
+
+        if(rolledNumber >= 90) {
+            //generate LEGENDARY item
+            rarity = Rarity.LEGENDARY;
+        } else if(rolledNumber >= 75) {
+            //generate RARE item
+            rarity = Rarity.RARE;
+        } else if(rolledNumber >= 50) {
+            //generate UNCOMMON item
+            rarity = Rarity.UNCOMMON;
+        } else {
+            //generate COMMON item
+            rarity = Rarity.COMMON;
+        }
+
+        List<Item> itemsWithRarity = caseItems.stream().filter(i -> i.getRarity() == rarity).collect(Collectors.toList());
+        return itemsWithRarity.get(lootRollHelper.getRandomIntRoll(0, itemsWithRarity.size() - 1));
     }
 }

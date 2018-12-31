@@ -28,6 +28,7 @@ public class RouletteLogic implements IRouletteLogic {
         }
         //check if the bet is valid
         tokenHelper.hasEnoughTokens(username, betAmount);
+        tokenHelper.removeTokens(username, betAmount);
 
         //make a roulette roll, values between 0 - 36
         int rolledNumber = lootRollHelper.getRandomIntRoll(0, 36);

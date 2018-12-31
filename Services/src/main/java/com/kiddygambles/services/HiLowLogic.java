@@ -20,8 +20,9 @@ public class HiLowLogic implements IHiLowLogic {
 
     @Override
     public GameHistory playHiLow(String username, int betAmount, int currentCardNumber, boolean higher) {
-        //check if bet is valid and take tokens from user
+        //check if bet is valid
         tokenHelper.hasEnoughTokens(username, betAmount);
+        tokenHelper.removeTokens(username, betAmount);
 
         //roll a random number and determine outcome.
         int rolledNumber = lootRollHelper.getRandomIntRoll(0, 12);

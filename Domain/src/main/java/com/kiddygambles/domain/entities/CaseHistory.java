@@ -11,19 +11,23 @@ import javax.persistence.*;
 public class CaseHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private int id;
-        private Double rolledNumber;
+    private int id;
+    private Double rolledNumber;
 
-        @ManyToOne(fetch=FetchType.LAZY)
-        @JoinColumn(name="item_id")
-        private Item item;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="item_id")
+    private Item item;
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "case_id", nullable = false)
-        private Case wonCase;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_id", nullable = false)
+    private Case wonCase;
+
+    public CaseHistory() {
+
+    }
 
     public CaseHistory(Item item, Double rolledNumber) {
-            this.item = item;
+        this.item = item;
         this.rolledNumber = rolledNumber;
     }
 }

@@ -1,5 +1,6 @@
 package com.kiddygambles.controllers;
 
+import com.kiddygambles.domain.DTO.CaseDTO;
 import com.kiddygambles.domain.entities.Case;
 import com.kiddygambles.domain.entities.CaseHistory;
 import com.kiddygambles.services.Interfaces.ICaseLogic;
@@ -28,7 +29,7 @@ public class CaseController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Case> getCase(@PathVariable("id") int id) {
+    public ResponseEntity<CaseDTO> getCase(@PathVariable("id") int id) {
         return new ResponseEntity<>(caseLogic.getCase(id), HttpStatus.OK);
     }
 
@@ -50,7 +51,7 @@ public class CaseController {
 
     //Show list of recently won items before websocket server takes over to update it.
     @GetMapping(path = "/{id}/winnings")
-    public ResponseEntity<Iterable<CaseHistory>> GetRecentWinnings(@RequestParam("id") int caseID) {
+    public ResponseEntity<Iterable<CaseHistory>> GetRecentWinnings(@PathVariable("id") int caseID) {
         return new ResponseEntity<>(caseLogic.getWinHistory(caseID), HttpStatus.OK);
     }
 }

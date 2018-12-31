@@ -1,5 +1,6 @@
 package com.kiddygambles.services.Interfaces;
 
+import com.kiddygambles.domain.DTO.CaseDTO;
 import com.kiddygambles.domain.entities.Case;
 import com.kiddygambles.domain.entities.CaseHistory;
 import com.kiddygambles.domain.entities.Item;
@@ -13,7 +14,7 @@ public interface ICaseLogic {
      * @return found case
      * @throws IllegalArgumentException if case could not be found
      */
-    Case getCase(int id);
+    CaseDTO getCase(int id);
 
     /**
      * Get all cases

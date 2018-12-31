@@ -20,6 +20,8 @@ public class Case {
     @Setter
     private String description;
     @Setter
+    private String image;
+    @Setter
     private int price;
 
     //Items die behoren tot bepaalde cases
