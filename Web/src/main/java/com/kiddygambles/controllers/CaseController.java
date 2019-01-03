@@ -48,10 +48,4 @@ public class CaseController {
         caseLogic.deleteCase(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-    //Show list of recently won items before websocket server takes over to update it.
-    @GetMapping(path = "/{id}/winnings")
-    public ResponseEntity<Iterable<CaseHistory>> GetRecentWinnings(@PathVariable("id") int caseID) {
-        return new ResponseEntity<>(caseLogic.getWinHistory(caseID), HttpStatus.OK);
-    }
 }

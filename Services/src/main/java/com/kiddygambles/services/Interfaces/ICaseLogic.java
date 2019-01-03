@@ -51,13 +51,6 @@ public interface ICaseLogic {
     Case updateCase(int caseID, String caseName, String caseDescription, int price);
 
     /**
-     * get the win history of a case
-     * @param caseID the id of the case you want to get the winhistory for.
-     * @return a list of winhistories
-     */
-    Iterable<CaseHistory> getWinHistory(int caseID);
-
-    /**
      * Open a case
      * @param username the user who wants to open a case
      * @param caseID the case you wish to open

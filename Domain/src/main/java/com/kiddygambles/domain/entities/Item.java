@@ -24,6 +24,7 @@ public class Item {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
     private List<Case> cases = new ArrayList<>();
 
+    @JsonBackReference
     @OneToMany(mappedBy = "item")
     private Set<CaseHistory> winHistories;
 

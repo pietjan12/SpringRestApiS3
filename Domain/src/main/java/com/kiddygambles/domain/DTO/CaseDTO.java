@@ -14,9 +14,9 @@ public class CaseDTO {
     private String image;
     private int price;
     private List<ItemDTO> items;
-    private Set<CaseHistory> history;
+    private List<CaseHistoryDTO> history;
 
-    public CaseDTO(int id, String name, String description, String image, int price, List<ItemDTO> items, Set<CaseHistory> history) {
+    public CaseDTO(int id, String name, String description, String image, int price, List<ItemDTO> items, List<CaseHistoryDTO> history) {
         this.id = id;
         this.name = name;
         this.description = description;

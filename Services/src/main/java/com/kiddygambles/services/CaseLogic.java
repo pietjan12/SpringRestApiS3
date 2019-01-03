@@ -3,8 +3,10 @@ package com.kiddygambles.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kiddygambles.data.IAccountRepository;
+import com.kiddygambles.data.ICaseHistoryRepository;
 import com.kiddygambles.data.ICaseRepository;
 import com.kiddygambles.domain.DTO.CaseDTO;
+import com.kiddygambles.domain.DTO.CaseHistoryDTO;
 import com.kiddygambles.domain.DTO.ItemDTO;
 import com.kiddygambles.domain.Enum.Rarity;
 import com.kiddygambles.domain.entities.Account;
@@ -21,23 +23,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.json.Json;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.kiddygambles.services.Constants.KiddyAPIConstants.inventoryURL;
 
 @Service
 public class CaseLogic implements ICaseLogic {
+    //repos
+    private ICaseHistoryRepository caseHistoryContext;
     private ICaseRepository caseContext;
     private IAccountRepository accountContext;
+
+    //Helper classes for common functions
     private RestCallHelper restCallHelper;
     private LootRollHelper lootRollHelper;
     private TokenHelper tokenHelper;
 
     @Autowired
-    public CaseLogic(ICaseRepository caseContext, IAccountRepository accountContext, TokenHelper tokenHelper, RestCallHelper restCallHelper, LootRollHelper lootRollHelper) {
+    public CaseLogic(ICaseHistoryRepository caseHistoryContext, ICaseRepository caseContext, IAccountRepository accountContext, TokenHelper tokenHelper, RestCallHelper restCallHelper, LootRollHelper lootRollHelper) {
+        this.caseHistoryContext = caseHistoryContext;
         this.caseContext = caseContext;
         this.accountContext = accountContext;
         this.tokenHelper = tokenHelper;
@@ -49,17 +54,34 @@ public class CaseLogic implements ICaseLogic {
     public CaseDTO getCase(int id){
         Case myCase = checkCaseExists(id);
 
+        Map<Integer, ItemDTO> itemDTOMap = new HashMap<>();
+        List<CaseHistory> recentHistory;
+        List<CaseHistoryDTO> history = new ArrayList<>();
         List<ItemDTO> items = new ArrayList<>();
+
         //Get more details of items within case
         for(Item i : myCase.getItems()) {
             ResponseEntity<ItemDTO> item = restCallHelper.makeGetRestCall(inventoryURL + "/item/" + i.getItemID(), ItemDTO.class);
             ItemDTO itemDTO = item.getBody();
             itemDTO.setRarity(i.getRarity());
             items.add(itemDTO);
+            //Add item to a hashmap for faster lookup
+            itemDTOMap.put(i.getItemID(), itemDTO);
         }
 
-        CaseDTO caseDTO = new CaseDTO(myCase.getId(), myCase.getName(), myCase.getDescription(), myCase.getImage(), myCase.getPrice(), items, myCase.getHistory());
-        return caseDTO;
+        //get recent history from list with a limit of 10
+        recentHistory = myCase.getHistory().subList(Math.max(myCase.getHistory().size() - 12, 0), myCase.getHistory().size());
+        //reverse list so the newest item is first
+        Collections.reverse(recentHistory);
+
+        for(CaseHistory ch : recentHistory) {
+            //find itemDTO equivalent for item
+            ItemDTO item = itemDTOMap.get(ch.getItem().getItemID());
+            CaseHistoryDTO caseHistoryDTO = new CaseHistoryDTO(ch.getId(), ch.getRolledNumber(), item);
+            history.add(caseHistoryDTO);
+        }
+
+        return new CaseDTO(myCase.getId(), myCase.getName(), myCase.getDescription(), myCase.getImage(), myCase.getPrice(), items, history);
     }
 
     @Override
@@ -99,15 +121,6 @@ public class CaseLogic implements ICaseLogic {
     }
 
     @Override
-    public Iterable<CaseHistory> getWinHistory(int caseID) {
-        Case myCase = checkCaseExists(caseID);
-        return myCase.getHistory();
-    }
-
-    //================================================================================
-    // OPEN METHOD
-    //================================================================================
-    @Override
     public CaseHistory openCase(String username, int caseID) {
         //check if case exists
         Case caseToOpen = checkCaseExists(caseID);
@@ -125,7 +138,7 @@ public class CaseLogic implements ICaseLogic {
         //save winning details to case as history
         caseToOpen.getHistory().add(winHistory);
         winHistory.setWonCase(caseToOpen);
-        caseContext.save(caseToOpen);
+        caseHistoryContext.save(winHistory);
 
         //Save item to winning account
         saveItemToAccount(username, winningItem.getItemID());
@@ -137,9 +150,8 @@ public class CaseLogic implements ICaseLogic {
         return winHistory;
     }
 
-
     //================================================================================
-    // HELPER METHODS
+    // PRIVATE METHODS
     //================================================================================
     private void saveItemToAccount(String username, int itemID) {
         Account account = checkAccountExists(username);

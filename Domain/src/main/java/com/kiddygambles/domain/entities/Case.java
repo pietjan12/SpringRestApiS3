@@ -1,5 +1,6 @@
 package com.kiddygambles.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,8 +34,10 @@ public class Case {
     )
     private List<Item> items = new ArrayList<>();
 
-    @OneToMany(mappedBy = "wonCase")
-    private Set<CaseHistory> history;
+    @JsonBackReference
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "wonCase")
+    private List<CaseHistory> history;
 
     public Case() {
 
