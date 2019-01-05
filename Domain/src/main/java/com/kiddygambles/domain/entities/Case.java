@@ -32,7 +32,7 @@ public class Case {
             joinColumns = {@JoinColumn(name = "CaseID")},
             inverseJoinColumns = {@JoinColumn(name = "ItemID")}
     )
-    private List<Item> items = new ArrayList<>();
+    private List<Item> items;
 
     @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY)
@@ -47,5 +47,7 @@ public class Case {
         this.name = name;
         this.description = description;
         this.price = price;
+        this.items = new ArrayList<>();
+        this.history = new ArrayList<>();
     }
 }

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -22,7 +24,6 @@ public class RestCallHelper {
     }
 
     public ResponseEntity<String> makePostRestCall(String url, String data) {
-        //Use build in spring uri builder to avoid urisyntaxexception handling
         URI uri = UriComponentsBuilder.fromUriString(url)
                 .build()
                 .toUri();

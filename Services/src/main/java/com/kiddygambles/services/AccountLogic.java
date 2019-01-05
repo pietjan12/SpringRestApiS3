@@ -22,18 +22,11 @@ public class AccountLogic implements IAccountLogic {
     }
 
     @Override
-    public Account GetUser(Principal user, int userID) throws IllegalArgumentException, NullPointerException {
+    public Account GetUser(int userID) {
         Optional<Account> foundAccount = accountContext.findById(userID);
 
         if(!foundAccount.isPresent()) {
-            throw new NullPointerException("User not found in the system");
-        }
-        //Optional omzetten naar juiste klasse om te gaan vergelijken of claim geldig is
-        Account account = foundAccount.get();
-
-        //In ons geval mag alleen de gebruiker zijn eigen gegevens ophalen
-        if(!account.getUsername().equals(user.getName())) {
-            throw new IllegalArgumentException("You are not authorized to access this users info!");
+            throw new IllegalArgumentException("User not found in the system");
         }
 
         return foundAccount.get();

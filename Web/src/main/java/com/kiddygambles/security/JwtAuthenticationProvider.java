@@ -31,7 +31,7 @@ import static com.kiddygambles.security.SecurityConstants.SecurityConstants.JWTK
 
 public class JwtAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
-    private AuthLogic userDetailsImpl; //TODO: removed the userDetailService implementation does this work??
+    private AuthLogic userDetailsImpl;
 
     public JwtAuthenticationProvider(AuthLogic userDetailsImpl) {
         this.userDetailsImpl = userDetailsImpl;
@@ -40,7 +40,7 @@ public class JwtAuthenticationProvider extends AbstractUserDetailsAuthentication
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         JwtUser user = (JwtUser) userDetails;
-        userDetailsImpl.loadUserByUsername(user.getUserID(), user.getUsername());
+        userDetailsImpl.loadUserByID(user.getUserID(), user.getUsername());
     }
 
     @Override

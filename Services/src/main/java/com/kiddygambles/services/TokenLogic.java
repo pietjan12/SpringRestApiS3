@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.json.Json;
 import java.security.Principal;
@@ -31,13 +33,13 @@ public class TokenLogic implements ITokenLogic {
     }
 
     @Override
-    public void buyToken(String username, int senderID, int amount) {
+    public void buyToken(String username, int senderBankAccountID, int amount) {
         Account account = getUser(username);
 
         //get the ratio of tokens per balance, this differs based on how many you buy.
         int ratio = determineTokenRatio(amount);
 
-        transferFunds(senderID, amount, ratio);
+        transferFunds(senderBankAccountID, amount, ratio);
 
         //account tokens updaten en opslaan in database.
         account.setTokens(account.getTokens() + amount);
@@ -86,10 +88,10 @@ public class TokenLogic implements ITokenLogic {
         myTransaction.put("receiverID", gamblingBankNumber);
         myTransaction.put("price", cost);
 
-        ResponseEntity<String> balanceTransferCall = restCallHelper.makePostRestCall(bankURL + "/bank/transfer", myTransaction.toString());
+        ResponseEntity<String> response = restCallHelper.makePostRestCall(bankURL + "/bank/transfer", myTransaction.toString());
 
-        if(balanceTransferCall.getStatusCode() != HttpStatus.OK) {
-            throw new IllegalArgumentException("Insufficient balance");
+        if(response.getStatusCode() != HttpStatus.OK) {
+            throw new IllegalArgumentException(response.getBody());
         }
     }
 }

@@ -15,14 +15,12 @@ import com.kiddygambles.domain.entities.CaseHistory;
 import com.kiddygambles.domain.entities.Item;
 import com.kiddygambles.services.Helper.LootRollHelper;
 import com.kiddygambles.services.Helper.RestCallHelper;
-import com.kiddygambles.services.Helper.TokenHelper;
 import com.kiddygambles.services.Interfaces.ICaseLogic;
 import org.assertj.core.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.json.Json;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,14 +36,12 @@ public class CaseLogic implements ICaseLogic {
     //Helper classes for common functions
     private RestCallHelper restCallHelper;
     private LootRollHelper lootRollHelper;
-    private TokenHelper tokenHelper;
 
     @Autowired
-    public CaseLogic(ICaseHistoryRepository caseHistoryContext, ICaseRepository caseContext, IAccountRepository accountContext, TokenHelper tokenHelper, RestCallHelper restCallHelper, LootRollHelper lootRollHelper) {
+    public CaseLogic(ICaseHistoryRepository caseHistoryContext, ICaseRepository caseContext, IAccountRepository accountContext, RestCallHelper restCallHelper, LootRollHelper lootRollHelper) {
         this.caseHistoryContext = caseHistoryContext;
         this.caseContext = caseContext;
         this.accountContext = accountContext;
-        this.tokenHelper = tokenHelper;
         this.restCallHelper = restCallHelper;
         this.lootRollHelper = lootRollHelper;
     }
@@ -122,13 +118,15 @@ public class CaseLogic implements ICaseLogic {
 
     @Override
     public CaseHistory openCase(String username, int caseID) {
-        //check if case exists
         Case caseToOpen = checkCaseExists(caseID);
+        Account account = checkAccountExists(username);
 
         //check if user has enough tokens to open case
-        tokenHelper.hasEnoughTokens(username, caseToOpen.getPrice());
+        if(caseToOpen.getPrice() > account.getTokens()) {
+            throw new IllegalArgumentException("User does not have enough tokens!");
+        }
 
-        //lootroll doen om item te bepalen.
+        //Make a roll to determine item won
         double lootRoll = lootRollHelper.getRandomDoubleRoll(0,100);
         Item winningItem = generateWinningItem(lootRoll, caseToOpen.getItems());
 
@@ -144,7 +142,8 @@ public class CaseLogic implements ICaseLogic {
         saveItemToAccount(username, winningItem.getItemID());
 
         //remove tokens from account if everything went correctly
-        tokenHelper.removeTokens(username, caseToOpen.getPrice());
+        account.setTokens(account.getTokens() - caseToOpen.getPrice());
+        accountContext.save(account);
 
         //return winningdetails to user.
         return winHistory;

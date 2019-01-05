@@ -1,10 +1,8 @@
 package com.kiddygambles.domain.DTO;
 
-import com.kiddygambles.domain.entities.CaseHistory;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Set;
 
 @Getter
 public class CaseDTO {

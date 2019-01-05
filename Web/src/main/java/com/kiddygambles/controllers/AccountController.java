@@ -20,7 +20,7 @@ public class AccountController {
     }
 
     @GetMapping(path="/{id}")
-    public ResponseEntity<Account> GetUserById(@PathVariable("id") int userID, Principal user) {
-        return new ResponseEntity<>(accountLogic.GetUser(user, userID), HttpStatus.OK);
+    public ResponseEntity<Account> GetUserById(@PathVariable("id") int userID) {
+        return new ResponseEntity<>(accountLogic.GetUser(userID), HttpStatus.OK);
     }
 }

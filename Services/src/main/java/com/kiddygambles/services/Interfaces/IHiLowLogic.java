@@ -12,5 +12,5 @@ public interface IHiLowLogic {
      * @return a gamehistory with the results of the roll
      * @throws IllegalArgumentException if user does not have enough tokens , or any of the parameters are missing.
      */
-    public GameHistory playHiLow(String username, int betAmount, int currentCardNumber, boolean higher);
+     GameHistory playHiLow(String username, int betAmount, int currentCardNumber, boolean higher);
 }

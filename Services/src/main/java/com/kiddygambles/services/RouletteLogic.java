@@ -1,23 +1,26 @@
 package com.kiddygambles.services;
 
+import com.kiddygambles.data.IAccountRepository;
+import com.kiddygambles.domain.entities.Account;
 import com.kiddygambles.domain.entities.GameHistory;
 import com.kiddygambles.services.Constants.RouletteConstants;
 import com.kiddygambles.services.Helper.LootRollHelper;
-import com.kiddygambles.services.Helper.TokenHelper;
 import com.kiddygambles.services.Interfaces.IRouletteLogic;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class RouletteLogic implements IRouletteLogic {
+    private IAccountRepository accountContext;
     private LootRollHelper lootRollHelper;
-    private TokenHelper tokenHelper;
 
     @Autowired
-    public RouletteLogic(LootRollHelper lootRollHelper, TokenHelper tokenHelper) {
+    public RouletteLogic(IAccountRepository accountContext, LootRollHelper lootRollHelper) {
+        this.accountContext = accountContext;
         this.lootRollHelper = lootRollHelper;
-        this.tokenHelper = tokenHelper;
     }
 
     @Override
@@ -26,9 +29,15 @@ public class RouletteLogic implements IRouletteLogic {
         if(intChoice == null && stringChoice == null) {
             throw new IllegalArgumentException("No bet choice given!");
         }
-        //check if the bet is valid
-        tokenHelper.hasEnoughTokens(username, betAmount);
-        tokenHelper.removeTokens(username, betAmount);
+
+        Account account = getUser(username);
+        //check if user has enough tokens
+        if(betAmount > account.getTokens()) {
+            throw new IllegalArgumentException("User does not have enough tokens!");
+        }
+
+        //Remove tokens from user
+        account.setTokens(account.getTokens() - betAmount);
 
         //make a roulette roll, values between 0 - 36
         int rolledNumber = lootRollHelper.getRandomIntRoll(0, 36);
@@ -36,17 +45,33 @@ public class RouletteLogic implements IRouletteLogic {
         history.setRolledNumber(rolledNumber);
 
         //Most valued win first
-        if (intChoice.equals(rolledNumber)) {
+        if (intChoice != null && intChoice.equals(rolledNumber)) {
             //won 35 : 1
             history.setWon(true);
             history.setWonTokens(betAmount * 35);
-            tokenHelper.addTokens(username, history.getWonTokens());
+
+            //add tokens to user
+            account.setTokens(account.getTokens() + history.getWonTokens());
         } else if(stringChoice.equals(RouletteConstants.numberWithColors.get(rolledNumber))) {
             history.setWon(true);
             history.setWonTokens(betAmount * 2);
-            tokenHelper.addTokens(username, history.getWonTokens());
+            //add tokens to user
+            account.setTokens(account.getTokens() + history.getWonTokens());
         }
 
+        //update account token balance
+        accountContext.save(account);
+
         return history;
+    }
+
+    private Account getUser(String username) {
+        Optional<Account> foundAccount = accountContext.findByUsername(username);
+
+        if(!foundAccount.isPresent()) {
+            throw new NullPointerException("Account with username + " + username + " Not found");
+        }
+
+        return foundAccount.get();
     }
 }

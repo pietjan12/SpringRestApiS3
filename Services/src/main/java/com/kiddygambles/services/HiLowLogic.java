@@ -1,28 +1,37 @@
 package com.kiddygambles.services;
 
+import com.kiddygambles.data.IAccountRepository;
+import com.kiddygambles.domain.entities.Account;
 import com.kiddygambles.domain.entities.GameHistory;
 import com.kiddygambles.services.Helper.LootRollHelper;
-import com.kiddygambles.services.Helper.TokenHelper;
 import com.kiddygambles.services.Interfaces.IHiLowLogic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class HiLowLogic implements IHiLowLogic {
+    private IAccountRepository accountContext;
     private LootRollHelper lootRollHelper;
-    private TokenHelper tokenHelper;
 
     @Autowired
-    public HiLowLogic(LootRollHelper lootRollHelper, TokenHelper tokenHelper) {
+    public HiLowLogic(IAccountRepository accountContext, LootRollHelper lootRollHelper) {
+        this.accountContext = accountContext;
         this.lootRollHelper = lootRollHelper;
-        this.tokenHelper = tokenHelper;
     }
 
     @Override
     public GameHistory playHiLow(String username, int betAmount, int currentCardNumber, boolean higher) {
-        //check if bet is valid
-        tokenHelper.hasEnoughTokens(username, betAmount);
-        tokenHelper.removeTokens(username, betAmount);
+        Account account = getUser(username);
+
+        //Check if user has enough tokens
+        if(betAmount > account.getTokens()) {
+            throw new IllegalArgumentException("User does not have enough tokens!");
+        }
+
+        //Remove tokens from user
+        account.setTokens(account.getTokens() - betAmount);
 
         //roll a random number and determine outcome.
         int rolledNumber = lootRollHelper.getRandomIntRoll(0, 12);
@@ -37,10 +46,22 @@ public class HiLowLogic implements IHiLowLogic {
             gameHistory.setWon(true);
             gameHistory.setWonTokens(betAmount * 2);
             //add tokens to user.
-
-            tokenHelper.addTokens(username, gameHistory.getWonTokens());
+            account.setTokens(account.getTokens() + gameHistory.getWonTokens());
         }
 
+        //update account token balance
+        accountContext.save(account);
+
         return gameHistory;
+    }
+
+    private Account getUser(String username) {
+        Optional<Account> foundAccount = accountContext.findByUsername(username);
+
+        if(!foundAccount.isPresent()) {
+            throw new NullPointerException("Account with username + " + username + " Not found");
+        }
+
+        return foundAccount.get();
     }
 }
